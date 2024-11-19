@@ -195,3 +195,9 @@ client.unfocused        #282828 #3c3836 #928374 #3c3836
 # Dringendes Fenster (z. B. bei Benachrichtigungen)
 client.urgent           #FF0000 #FF0000 #FFFFFF #FF0000
 exec --no-startup-id picom --daemon --config ~/.config/picom.conf
+
+# Screenshot full screen
+bindsym Print exec scrot ~/Pictures/screenshot.png
+# Screenshot selected area
+bindsym Shift+Print exec scrot -s ~/Pictures/screenshot.png
+
