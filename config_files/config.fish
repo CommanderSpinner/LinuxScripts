@@ -27,3 +27,6 @@ end
 set -g fish_greeting ""
 fastfetch
 alias highlight="highlight -O ansi"
+alias fdiscord="flatpak run com.discordapp.Discord"
+alias fsteam="flatpak run com.valvesoftware.Steam"
+
