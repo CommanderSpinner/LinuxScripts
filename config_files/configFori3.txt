@@ -194,3 +194,4 @@ client.unfocused        #282828 #3c3836 #928374 #3c3836
 
 # Dringendes Fenster (z. B. bei Benachrichtigungen)
 client.urgent           #FF0000 #FF0000 #FFFFFF #FF0000
+exec --no-startup-id picom --daemon --config ~/.config/picom.conf
