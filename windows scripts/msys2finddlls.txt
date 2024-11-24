@@ -1,0 +1,1 @@
+ldd my-cool-program.exe | grep /mingw64 | awk '{print $3}' | xargs -i cp {} .
