@@ -197,5 +197,5 @@ client.urgent           #FF0000 #FF0000 #FFFFFF #FF0000
 exec --no-startup-id picom --daemon --config ~/.config/picom.conf
 
 bindsym Print exec flameshot gui -c
-xinput --set-prop 9 "libinput Accel Speed" -0.25
+exec xinput --set-prop 9 "libinput Accel Speed" -0.25
 
