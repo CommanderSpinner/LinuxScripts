@@ -1,0 +1,12 @@
+services:
+  devcontainer:
+    image: devcontainer:latest
+    container_name: devcontainer
+    volumes:
+      - devcontainer_data:/workspace
+    tty: true
+    stdin_open: true
+    working_dir: /workspace
+
+volumes:
+  devcontainer_data:
