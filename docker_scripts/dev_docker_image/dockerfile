@@ -1,13 +1,10 @@
 # Basis-Image
 FROM debian:bookworm
 
-# Nicht-interaktive Installation
 ENV DEBIAN_FRONTEND=noninteractive
-
-# Arbeitsverzeichnis
 WORKDIR /workspace
 
-# Grundlegende Tools installieren (ohne .NET zuerst)
+# Grundlegende Tools installieren
 RUN apt-get update && apt-get install -y \
     sudo \
     curl \
@@ -27,9 +24,16 @@ RUN apt-get update && apt-get install -y \
     flatpak \
     bash-completion \
     locales \
+    nano \
+    vim \
     software-properties-common \
     gnupg \
     ca-certificates \
+    xfce4 \
+    xrdp \
+    openssh-server \
+    dbus-x11 \
+    x11-xserver-utils \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -41,12 +45,12 @@ RUN wget https://packages.microsoft.com/config/debian/12/packages-microsoft-prod
     && dpkg -i packages-microsoft-prod.deb \
     && rm packages-microsoft-prod.deb
 
-# .NET SDK installieren
-RUN apt-get update && apt-get install -y dotnet-sdk-7.0 \
+# .NET SDK 9 installieren
+RUN apt-get update && apt-get install -y dotnet-sdk-9.0 \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# VS Code DEB installieren (lokales DEB im selben Ordner wie Dockerfile)
+# VS Code DEB installieren
 COPY code.deb /tmp/vscode.deb
 RUN apt-get update && apt-get install -y /tmp/vscode.deb \
     && rm /tmp/vscode.deb
@@ -62,12 +66,33 @@ RUN git clone https://github.com/LinusDierheimer/fastfetch.git /tmp/fastfetch \
 # Fastfetch beim Terminalstart ausführen
 RUN echo "\n# Fastfetch beim Terminalstart\nfastfetch" >> /etc/bash.bashrc
 
+# SSH konfigurieren
+RUN mkdir /var/run/sshd \
+    && echo "PermitRootLogin yes" >> /etc/ssh/sshd_config \
+    && echo "X11Forwarding yes" >> /etc/ssh/sshd_config
+
+# RDP konfigurieren (nutzt Xfce)
+RUN echo "startxfce4" > /etc/skel/.xsession \
+    && sed -i.bak '/^#.*port=3389/c\port=3389' /etc/xrdp/xrdp.ini
+
 # Standardbenutzer erstellen
 RUN useradd -ms /bin/bash devuser \
     && echo "devuser:devuser" | chpasswd \
     && adduser devuser sudo
+
+# Switch to non-root user
 USER devuser
 WORKDIR /home/devuser
+
+# Copy the VS Code extension installer script with proper ownership
+COPY --chown=devuser:devuser install_vscode_extensions.sh /home/devuser/install_vscode_extensions.sh
+
+# Make the script executable (no sudo needed)
+RUN chmod +x /home/devuser/install_vscode_extensions.sh
+
+# Prettier als Standard-Formatter aktivieren
+RUN mkdir -p ~/.config/Code/User \
+    && echo '{ "editor.defaultFormatter": "esbenp.prettier-vscode", "editor.formatOnSave": true }' > ~/.config/Code/User/settings.json
 
 # Standardkommando
 CMD ["/bin/bash"]
